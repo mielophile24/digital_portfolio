@@ -6,7 +6,7 @@ export default function ResumeModal({
   onClose,
   src = '/resume.pdf',
   title = 'Amiel M. Mirafuentes – Resume',
-  subtitle = 'BS Information Technology · Fresh Graduate'
+  subtitle = 'BS Information Technology · 4th Year Student'
 }) {
   useEffect(() => {
     if (!isOpen) return;
