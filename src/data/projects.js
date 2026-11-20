@@ -31,7 +31,7 @@ export const PROJECTS = [
     about: 'A web-based system to organize student printing requests and track fees at the campus library. Created full technical documentation, workflow diagrams, and easy-to-follow user guides for staff and students.'
   },
   {
-    name: '4As Gardening Supplies Website',
+    name: 'Four As Gardening Supplies Website',
     kind: 'Website project',
     role: 'Frontend Developer',
     date: '',
