@@ -1,4 +1,4 @@
-export const NAV_LINKS = ['About', 'Projects', 'Skills', 'Education', 'Contact'];
+export const NAV_LINKS = ['About', 'Projects', 'Contributions', 'Skills', 'Education', 'Contact'];
 
 export const TECH_STACK = [
   ['Languages', ['Java', 'Python', 'C#', 'JavaScript']],
