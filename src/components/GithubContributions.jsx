@@ -6,14 +6,13 @@ const USERNAME = 'mielophile24';
 const API_URL = `https://github-contributions-api.jogruber.de/v4/${USERNAME}?y=last`;
 
 const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-const DAY_LABELS = ['', 'Mon', '', 'Wed', '', 'Fri', ''];
 
 const LEVEL_COLORS = {
   0: 'bg-white/[0.04] border border-white/[0.05]',
-  1: 'bg-[#5c3826] border border-[#6b422d]',
-  2: 'bg-[#8d5735] border border-[#9e633d]',
-  3: 'bg-[#be7744] border border-[#ce864f]',
-  4: 'bg-[#e2a365] border border-[#ebb178] shadow-sm shadow-oak/20'
+  1: 'bg-[#5c3826] border border-[#72452e]',
+  2: 'bg-[#8d5735] border border-[#a3653e]',
+  3: 'bg-[#be7744] border border-[#d2854e]',
+  4: 'bg-[#e2a365] border border-[#f0b57e] shadow-sm shadow-oak/25'
 };
 
 export default function GithubContributions() {
@@ -115,7 +114,6 @@ export default function GithubContributions() {
       if (contributions[i].count > 0) {
         currentStreak++;
       } else if (i === contributions.length - 1) {
-        // Today has 0 so far, check if yesterday had streak
         continue;
       } else {
         break;
@@ -137,6 +135,7 @@ export default function GithubContributions() {
     if (!dateStr) return '';
     const d = new Date(dateStr + 'T00:00:00');
     return d.toLocaleDateString('en-US', {
+      weekday: 'short',
       month: 'short',
       day: 'numeric',
       year: 'numeric'
@@ -145,17 +144,16 @@ export default function GithubContributions() {
 
   return (
     <Section id="contributions">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
-        <div>
-          <Heading sub="Year-round commit activity and open source contributions.">
-            GitHub Contributions
-          </Heading>
-        </div>
+      {/* Section Header */}
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
+        <Heading sub="Year-round commit history and open source contributions.">
+          GitHub Contributions
+        </Heading>
         <a
           href={`https://github.com/${USERNAME}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="group inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-coal border border-white/10 hover:border-oak text-sm font-semibold text-sand hover:text-oak transition-colors self-start md:self-auto mb-10 sm:mb-14"
+          className="group inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-coal border border-white/10 hover:border-oak text-sm font-semibold text-sand hover:text-oak transition-colors self-start sm:self-auto mb-10 sm:mb-14"
         >
           <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
             <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
@@ -167,35 +165,44 @@ export default function GithubContributions() {
         </a>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6">
-        <div className="lift p-4 sm:p-5 rounded-2xl bg-coal border border-white/5">
-          <p className="text-xs sm:text-sm text-mute">Total Contributions</p>
-          <p className="text-2xl sm:text-3xl font-display font-bold text-sand mt-1">
-            {loading ? '...' : (stats.total || 0).toLocaleString()}
-          </p>
-          <p className="text-xs text-mute/80 mt-1">In the last 12 months</p>
-        </div>
-        <div className="lift p-4 sm:p-5 rounded-2xl bg-coal border border-white/5">
-          <p className="text-xs sm:text-sm text-mute">Longest Streak</p>
-          <p className="text-2xl sm:text-3xl font-display font-bold text-oak mt-1">
-            {loading ? '...' : `${stats.longestStreak} days`}
-          </p>
-          <p className="text-xs text-mute/80 mt-1">Consistent activity</p>
-        </div>
-        <div className="lift col-span-2 sm:col-span-1 p-4 sm:p-5 rounded-2xl bg-coal border border-white/5">
-          <p className="text-xs sm:text-sm text-mute">Current Streak</p>
-          <p className="text-2xl sm:text-3xl font-display font-bold text-sand mt-1">
-            {loading ? '...' : `${stats.currentStreak} ${stats.currentStreak === 1 ? 'day' : 'days'}`}
-          </p>
-          <p className="text-xs text-mute/80 mt-1">Recent contributions</p>
-        </div>
-      </div>
+      {/* Maximized Full-Width Calendar Card */}
+      <div className="lift rounded-2xl bg-coal border border-white/5 p-5 sm:p-7 md:p-8 relative overflow-hidden">
+        {/* Top Header Row Inside Card: Key Metrics & Status */}
+        <div className="flex flex-wrap items-center justify-between gap-4 pb-6 mb-6 border-b border-white/5">
+          <div className="flex flex-wrap items-center gap-5 sm:gap-8">
+            <div>
+              <p className="text-xs text-mute font-medium">Total Contributions</p>
+              <p className="text-2xl sm:text-3xl font-display font-bold text-sand mt-0.5">
+                {loading ? '...' : (stats.total || 0).toLocaleString()}
+              </p>
+              <p className="text-[11px] text-mute/80 mt-0.5">Past 12 months</p>
+            </div>
+            <div className="h-10 w-px bg-white/10 hidden sm:block" />
+            <div>
+              <p className="text-xs text-mute font-medium">Longest Streak</p>
+              <p className="text-2xl sm:text-3xl font-display font-bold text-oak mt-0.5">
+                {loading ? '...' : `${stats.longestStreak} days`}
+              </p>
+              <p className="text-[11px] text-mute/80 mt-0.5">Best record</p>
+            </div>
+            <div className="h-10 w-px bg-white/10 hidden sm:block" />
+            <div>
+              <p className="text-xs text-mute font-medium">Current Streak</p>
+              <p className="text-2xl sm:text-3xl font-display font-bold text-sand mt-0.5">
+                {loading ? '...' : `${stats.currentStreak} ${stats.currentStreak === 1 ? 'day' : 'days'}`}
+              </p>
+              <p className="text-[11px] text-mute/80 mt-0.5">Active streak</p>
+            </div>
+          </div>
 
-      {/* Main Calendar Card */}
-      <div className="lift rounded-2xl bg-coal border border-white/5 p-5 sm:p-7 relative overflow-hidden">
+          <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.03] border border-white/5 text-xs text-mute">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span>GitHub Live Sync</span>
+          </div>
+        </div>
+
         {loading && (
-          <div className="py-14 text-center">
+          <div className="py-16 text-center">
             <div className="inline-block w-8 h-8 border-2 border-oak/30 border-t-oak rounded-full animate-spin mb-3"></div>
             <p className="text-sm text-mute">Loading contributions from GitHub...</p>
           </div>
@@ -214,86 +221,94 @@ export default function GithubContributions() {
 
         {!loading && !error && (
           <>
-            {/* Scrollable grid container */}
-            <div className="overflow-x-auto pb-3 pt-1 scrollbar-thin">
-              <div className="inline-block min-w-[760px] select-none">
-                {/* Month labels */}
-                <div className="flex text-xs text-mute mb-2 h-4 relative pl-8">
-                  {monthLabels.map((m, idx) => (
-                    <span
-                      key={idx}
-                      className="absolute"
-                      style={{ left: `calc(2rem + ${m.index * 14}px)` }}
-                    >
-                      {m.name}
-                    </span>
-                  ))}
-                </div>
-
-                {/* Calendar Days Matrix */}
-                <div className="flex gap-[3px]">
-                  {/* Day of week labels */}
-                  <div className="flex flex-col gap-[3px] pr-2 text-[10px] text-mute w-8 justify-between h-[96px] py-[1px]">
-                    {DAY_LABELS.map((day, idx) => (
-                      <span key={idx} className="h-[10.5px] leading-[10.5px]">
-                        {day}
-                      </span>
-                    ))}
+            {/* Scrollable on small screens, expands to 100% full card width on tablet/desktop */}
+            <div className="overflow-x-auto pb-2 scrollbar-thin">
+              <div className="min-w-[720px] w-full select-none">
+                <div className="flex w-full items-start gap-2">
+                  {/* Day-of-week labels */}
+                  <div className="w-6 shrink-0 pt-6 flex flex-col justify-between text-[10px] text-mute font-mono select-none h-[105px] sm:h-[118px] md:h-[132px] py-1">
+                    <span>Mon</span>
+                    <span>Wed</span>
+                    <span>Fri</span>
                   </div>
 
-                  {/* Weeks columns */}
-                  {weeks.map((week, wIdx) => (
-                    <div key={wIdx} className="flex flex-col gap-[3px]">
-                      {week.map((day, dIdx) => {
-                        if (!day) {
-                          return (
-                            <div
-                              key={dIdx}
-                              className="w-[11px] h-[11px] rounded-[2px] opacity-0"
-                            />
-                          );
-                        }
-
-                        const levelClass = LEVEL_COLORS[day.level] || LEVEL_COLORS[0];
-
-                        return (
-                          <div
-                            key={dIdx}
-                            onMouseEnter={() => setHoveredDay(day)}
-                            onMouseLeave={() => setHoveredDay(null)}
-                            className={`w-[11px] h-[11px] rounded-[2px] ${levelClass} transition-transform hover:scale-125 cursor-pointer relative`}
-                            aria-label={`${day.count} contributions on ${day.date}`}
-                          />
-                        );
-                      })}
+                  {/* Weeks and Months container taking full available space */}
+                  <div className="flex-1 w-full min-w-0">
+                    {/* Month labels positioned across 100% of the columns */}
+                    <div className="relative h-5 w-full text-[11px] text-mute mb-1.5 select-none">
+                      {monthLabels.map((m, idx) => (
+                        <span
+                          key={idx}
+                          className="absolute -translate-x-1"
+                          style={{ left: `${(m.index / weeks.length) * 100}%` }}
+                        >
+                          {m.name}
+                        </span>
+                      ))}
                     </div>
-                  ))}
+
+                    {/* Columns of weeks expanding across full width */}
+                    <div className="flex w-full justify-between gap-[2.5px] sm:gap-[3.5px] md:gap-[4.5px]">
+                      {weeks.map((week, wIdx) => (
+                        <div
+                          key={wIdx}
+                          className="flex-1 flex flex-col gap-[2.5px] sm:gap-[3.5px] md:gap-[4.5px] min-w-[8px]"
+                        >
+                          {week.map((day, dIdx) => {
+                            if (!day) {
+                              return (
+                                <div
+                                  key={dIdx}
+                                  className="w-full aspect-square opacity-0 pointer-events-none"
+                                />
+                              );
+                            }
+
+                            const levelClass = LEVEL_COLORS[day.level] || LEVEL_COLORS[0];
+
+                            return (
+                              <div
+                                key={dIdx}
+                                onMouseEnter={() => setHoveredDay(day)}
+                                onMouseLeave={() => setHoveredDay(null)}
+                                className={`w-full aspect-square rounded-[2px] sm:rounded-[3px] ${levelClass} transition-all duration-150 hover:scale-150 hover:z-20 cursor-pointer`}
+                                aria-label={`${day.count} contributions on ${day.date}`}
+                              />
+                            );
+                          })}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Bottom bar with Hover Details & Legend */}
-            <div className="mt-5 pt-4 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-mute">
-              <div className="min-h-[1.25rem] text-sand/90">
+            {/* Bottom Bar: Detail readout and Color Scale Legend */}
+            <div className="mt-6 pt-4 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-mute">
+              <div className="min-h-[1.5rem] flex items-center text-sand/90">
                 {hoveredDay ? (
-                  <span>
-                    <strong className="text-oak">{hoveredDay.count}</strong> contribution{hoveredDay.count !== 1 ? 's' : ''} on{' '}
-                    <span className="text-sand">{formatDate(hoveredDay.date)}</span>
+                  <span className="inline-flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-oak" />
+                    <span>
+                      <strong className="text-oak font-semibold">{hoveredDay.count}</strong> contribution{hoveredDay.count !== 1 ? 's' : ''} on{' '}
+                      <span className="text-sand font-medium">{formatDate(hoveredDay.date)}</span>
+                    </span>
                   </span>
                 ) : (
-                  <span className="text-mute">Hover over any square to view details</span>
+                  <span className="text-mute/80">Hover over any day square to view details</span>
                 )}
               </div>
 
-              {/* Legend */}
+              {/* Heatmap Legend */}
               <div className="flex items-center gap-1.5 self-end sm:self-auto">
-                <span className="text-[11px] mr-1">Less</span>
-                <span className={`w-[11px] h-[11px] rounded-[2px] ${LEVEL_COLORS[0]}`} />
-                <span className={`w-[11px] h-[11px] rounded-[2px] ${LEVEL_COLORS[1]}`} />
-                <span className={`w-[11px] h-[11px] rounded-[2px] ${LEVEL_COLORS[2]}`} />
-                <span className={`w-[11px] h-[11px] rounded-[2px] ${LEVEL_COLORS[3]}`} />
-                <span className={`w-[11px] h-[11px] rounded-[2px] ${LEVEL_COLORS[4]}`} />
-                <span className="text-[11px] ml-1">More</span>
+                <span className="text-[11px] text-mute mr-1">Less</span>
+                <span className={`w-3 h-3 rounded-[2px] ${LEVEL_COLORS[0]}`} />
+                <span className={`w-3 h-3 rounded-[2px] ${LEVEL_COLORS[1]}`} />
+                <span className={`w-3 h-3 rounded-[2px] ${LEVEL_COLORS[2]}`} />
+                <span className={`w-3 h-3 rounded-[2px] ${LEVEL_COLORS[3]}`} />
+                <span className={`w-3 h-3 rounded-[2px] ${LEVEL_COLORS[4]}`} />
+                <span className="text-[11px] text-mute ml-1">More</span>
               </div>
             </div>
           </>
