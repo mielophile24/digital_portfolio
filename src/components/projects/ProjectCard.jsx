@@ -33,7 +33,7 @@ export default function ProjectCard({ project, index }) {
               rel="noopener noreferrer"
               className="group inline-flex items-center gap-1.5 text-sm font-semibold text-oak hover:text-sand transition-colors"
             >
-              Visit website <span className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5">{chev('M7 17L17 7M9 7h8v8')}</span>
+              {project.linkLabel || 'Visit website'} <span className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5">{chev('M7 17L17 7M9 7h8v8')}</span>
             </a>
           ) : (
             <span aria-disabled="true" className="inline-flex items-center gap-1.5 text-sm text-mute cursor-not-allowed">
