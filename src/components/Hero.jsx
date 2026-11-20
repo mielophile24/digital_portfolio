@@ -7,7 +7,7 @@ export default function Hero({ onOpenResume }) {
     <section id="top" className="px-5 sm:px-8 pt-28 sm:pt-32 pb-16 sm:pb-24 min-h-[92svh] flex items-center">
       <div className="max-w-6xl mx-auto w-full grid lg:grid-cols-[1.3fr_1fr] gap-12 lg:gap-16 items-center">
         <div className="text-center lg:text-left">
-          <p className="hero-in text-oak font-medium mb-5">Information Technology · STI College Legazpi · Aspiring Full-stack Developer</p>
+          <p className="hero-in text-oak font-medium mb-5">Information Technology · Aspiring Full-stack Developer</p>
           <h1 className="hero-in font-display font-extrabold tracking-tight leading-[0.95] text-4xl min-[400px]:text-5xl sm:text-7xl xl:text-[5.5rem]">
             <span className="grad-text">Amiel M.<br />Mirafuentes</span>
           </h1>
