@@ -13,7 +13,7 @@ export default function Hero({ onOpenResume }) {
           </h1>
           <div className="hero-in">
             <p className="mt-7 text-mute text-base sm:text-lg max-w-xl mx-auto lg:mx-0 leading-relaxed">
-              Building web systems that keep information organized, from the database to the screen. Currently open to entry-level roles.
+              Building reliable, user-friendly websites and systems that solve real-world problems. Currently open for internship and entry-level roles.
             </p>
             <div className="mt-9 flex flex-wrap justify-center lg:justify-start gap-3">
               <a href="#projects" className="px-6 py-3 rounded-full bg-gradient-to-r from-[#f0b46e] to-oak text-ink font-semibold hover:-translate-y-0.5 hover:shadow-[0_12px_30px_-8px_rgba(240,180,110,.6)] transition-all">
