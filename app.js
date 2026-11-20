@@ -1,0 +1,411 @@
+const html = htm.bind(React.createElement);
+const { useState, useEffect } = React;
+
+const NAV = ['About','Experience','Projects','Skills','Education','Contact'];
+
+const STACK = [
+  ['Languages', ['Java','Python','C#','JavaScript']],
+  ['Front-end', ['HTML5','CSS3','React']],
+  ['Data', ['SQL','PostgreSQL','Database Management']],
+  ['Tools & practice', ['Git/GitHub','Web Development','Debugging','Computer Troubleshooting']]
+];
+
+const PROJECTS = [
+  { name:'DepEd Region V Basic Education Resources and Inputs Monitoring System', kind:'Capstone project', role:'Full-stack Developer', date:'Sep. 2025 – Dec. 2026', link:'',
+    about:'A centralized web platform for monitoring basic education resources and inputs in DepEd Region V. It combines multiple resource management tasks into one system, with a database connected to the user interface for storing, recording, and tracking information.' },
+  { name:'STI College Legazpi Library Printing Request Management System', kind:'Term project', role:'Documentation', date:'Dec. 2025', link:'',
+    about:'A system for managing printing requests at the STI College Legazpi library. My part was the documentation: a complete guide to its features, processes, and requirements, with step-by-step procedures for the major processes.' },
+  { name:'4As Gardening Supplies Website', kind:'Website project', role:'', date:'', link:'',
+    about:'A website for 4As Gardening Supplies that presents the shop and its gardening products to customers online.' },
+  { name:'Study Timer Hub', kind:'Website project', role:'', date:'', link:'https://study-timer-hub-kappa.vercel.app/',
+    about:'A minimalist study timer and productivity hub with Pomodoro, 50/10, Deep Work, and Active Recall modes, plus streak tracking and focus analytics.' }
+];
+
+const IMAGES = { photo:'', project0:'', project1:'', project2:'', project3:'' }; // Optional: paste an image URL or data URI to ship it permanently
+const EditCtx = React.createContext(false);
+function useImg(k){
+  const [src,setSrc] = useState(() => { try { return localStorage.getItem('img:'+k) || IMAGES[k] || ''; } catch(e){ return IMAGES[k] || ''; } });
+  const save = v => { setSrc(v || IMAGES[k] || ''); try { v ? localStorage.setItem('img:'+k, v) : localStorage.removeItem('img:'+k); } catch(e){} };
+  return [src, save];
+}
+function ImageSlot({k, label, className, children}){
+  const edit = React.useContext(EditCtx);
+  const [src, save] = useImg(k);
+  const pick = e => {
+    const f = e.target.files && e.target.files[0]; if(!f) return;
+    const r = new FileReader();
+    r.onload = () => { const im = new Image(); im.onload = () => {
+      const s = Math.min(1, 1200 / Math.max(im.width, im.height));
+      const c = document.createElement('canvas'); c.width = im.width*s; c.height = im.height*s;
+      c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
+      save(c.toDataURL('image/jpeg', .85)); }; im.src = r.result; };
+    r.readAsDataURL(f); e.target.value = '';
+  };
+  const btn = 'px-3 py-1.5 rounded-full bg-ink/80 backdrop-blur text-sand text-xs font-medium hover:bg-oak hover:text-ink transition-colors cursor-pointer focus-within:outline focus-within:outline-2 focus-within:outline-oak';
+  return html`<div className=${'relative overflow-hidden ' + className}>
+    ${src ? html`<img src=${src} alt=${label} className="absolute inset-0 w-full h-full object-cover"/>`
+          : html`<div className=${'absolute inset-0 flex items-center justify-center px-4 text-center ' + (edit ? 'pb-12' : '')}>${children || html`<span className="text-mute text-sm">${label}</span>`}</div>`}
+    ${edit && html`<div className="absolute bottom-3 inset-x-0 flex justify-center gap-2">
+      <label className=${btn}>${src ? 'Replace' : 'Upload image'}<input type="file" accept="image/*" className="sr-only" onChange=${pick}/></label>
+      ${src && html`<button className=${btn} onClick=${() => save('')}>Remove</button>`}
+    </div>`}
+  </div>`;
+}
+
+const MAX_IMGS = 3;
+function readImage(file, cb){
+  const r = new FileReader();
+  r.onload = () => { const im = new Image(); im.onload = () => {
+    const sc = Math.min(1, 1000 / Math.max(im.width, im.height));
+    const c = document.createElement('canvas'); c.width = im.width * sc; c.height = im.height * sc;
+    c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
+    cb(c.toDataURL('image/jpeg', .8)); }; im.src = r.result; };
+  r.readAsDataURL(file);
+}
+function Lightbox({imgs, start, label, onClose}){
+  const [n, setN] = useState(start);
+  const touch = React.useRef(null);
+  const go = d => setN(v => (v + d + imgs.length) % imgs.length);
+  useEffect(() => {
+    const onKey = e => {
+      if (e.key === 'Escape') onClose();
+      else if (e.key === 'ArrowRight' && imgs.length > 1) go(1);
+      else if (e.key === 'ArrowLeft' && imgs.length > 1) go(-1);
+    };
+    document.addEventListener('keydown', onKey);
+    const prev = document.body.style.overflow; document.body.style.overflow = 'hidden';
+    return () => { document.removeEventListener('keydown', onKey); document.body.style.overflow = prev; };
+  }, []);
+  const circ = 'h-10 w-10 rounded-full bg-ink/70 border border-white/20 text-sand flex items-center justify-center hover:bg-oak hover:text-ink transition-colors';
+  const ic = d => html`<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d=${d}/></svg>`;
+  const stop = f => e => { e.stopPropagation(); f(); };
+  return ReactDOM.createPortal(html`
+    <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm flex flex-col items-center justify-center px-3 sm:px-20"
+         style=${{ paddingTop: 'env(safe-area-inset-top, 0px)', paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
+         onClick=${onClose}
+         onTouchStart=${e => { e.stopPropagation(); touch.current = e.touches[0].clientX; }}
+         onTouchEnd=${e => { e.stopPropagation(); if (touch.current === null || imgs.length < 2) return; const dx = e.changedTouches[0].clientX - touch.current; touch.current = null; if (Math.abs(dx) > 50) go(dx < 0 ? 1 : -1); }}>
+      <button autoFocus aria-label="Close preview" className=${circ + ' absolute right-3 sm:right-6'} style=${{ top: 'calc(0.75rem + env(safe-area-inset-top, 0px))' }} onClick=${stop(onClose)}>${ic('M6 6l12 12M18 6L6 18')}</button>
+      <div role="dialog" aria-modal="true" aria-label=${label} className="w-full max-w-5xl flex items-center justify-center" onClick=${e => e.stopPropagation()}>
+        <img src=${imgs[n]} alt=${label + ' ' + (n + 1) + ' of ' + imgs.length} className="max-h-[76svh] w-auto max-w-full rounded-xl object-contain shadow-2xl"/>
+      </div>
+      ${imgs.length > 1 && html`
+        <button aria-label="Previous image" className=${circ + ' absolute left-2 sm:left-6 top-1/2 -translate-y-1/2'} onClick=${stop(() => go(-1))}>${ic('M15 5l-7 7 7 7')}</button>
+        <button aria-label="Next image" className=${circ + ' absolute right-2 sm:right-6 top-1/2 -translate-y-1/2'} onClick=${stop(() => go(1))}>${ic('M9 5l7 7-7 7')}</button>
+        <p className="mt-4 text-sm text-sand/80" onClick=${e => e.stopPropagation()}>${n + 1} / ${imgs.length}</p>`}
+    </div>`, document.body);
+}
+
+function ProjectImages({k, label, className}){
+  const edit = React.useContext(EditCtx);
+  const [imgs, setImgs] = useState(() => {
+    try {
+      const j = localStorage.getItem('imgs:' + k);
+      if (j) { const a = JSON.parse(j); if (Array.isArray(a)) return a.slice(0, MAX_IMGS); }
+      const o = localStorage.getItem('img:' + k); if (o) return [o];
+    } catch(e){}
+    const d = IMAGES[k]; return d ? [].concat(d).slice(0, MAX_IMGS) : [];
+  });
+  const [i, setI] = useState(0);
+  const touch = React.useRef(null);
+  const [paused, setPaused] = useState(false);
+  const [lb, setLb] = useState(null);
+  useEffect(() => {
+    if (imgs.length < 2 || paused || edit || lb !== null) return;
+    if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const t = setInterval(() => setI(v => (Math.min(v, imgs.length - 1) + 1) % imgs.length), 4000);
+    return () => clearInterval(t);
+  }, [imgs.length, paused, edit, lb, i]);
+  const cur = Math.max(0, Math.min(i, imgs.length - 1));
+  const save = a => { a = a.slice(0, MAX_IMGS); setImgs(a); try { localStorage.removeItem('img:' + k); a.length ? localStorage.setItem('imgs:' + k, JSON.stringify(a)) : localStorage.removeItem('imgs:' + k); } catch(e){} };
+  const go = d => setI((cur + d + imgs.length) % imgs.length);
+  const add = e => {
+    const fs = Array.from(e.target.files || []).slice(0, MAX_IMGS - imgs.length); e.target.value = '';
+    if (!fs.length) return;
+    const out = []; let n = 0;
+    fs.forEach((f, j) => readImage(f, d => { out[j] = d; if (++n === fs.length) { save(imgs.concat(out)); setI(imgs.length); } }));
+  };
+  const swap = e => {
+    const f = e.target.files && e.target.files[0]; e.target.value = ''; if (!f) return;
+    readImage(f, d => { const a = imgs.slice(); a[cur] = d; save(a); });
+  };
+  const del = () => { const a = imgs.filter((_, x) => x !== cur); save(a); setI(Math.max(0, Math.min(cur, a.length - 1))); };
+  const btn = 'px-3 py-1.5 rounded-full bg-ink/80 backdrop-blur text-sand text-xs font-medium hover:bg-oak hover:text-ink transition-colors cursor-pointer';
+  const nav = 'absolute top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-ink/70 backdrop-blur text-sand flex items-center justify-center hover:bg-oak hover:text-ink transition-colors';
+  const chev = d => html`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d=${d}/></svg>`;
+  return html`<div className=${'relative overflow-hidden ' + className}
+      onMouseEnter=${() => setPaused(true)} onMouseLeave=${() => setPaused(false)} onFocus=${() => setPaused(true)} onBlur=${() => setPaused(false)}
+      onTouchStart=${e => { touch.current = e.touches[0].clientX; }}
+      onTouchEnd=${e => { if (touch.current === null || imgs.length < 2) return; const dx = e.changedTouches[0].clientX - touch.current; touch.current = null; if (Math.abs(dx) > 40) go(dx < 0 ? 1 : -1); }}>
+    ${imgs.length
+      ? imgs.map((src, x) => html`<img key=${x} src=${src} alt=${label + ' ' + (x + 1) + ' of ' + imgs.length} aria-hidden=${x !== cur} className=${'absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ' + (x === cur ? 'opacity-100' : 'opacity-0')}/>`)
+      : html`<div className=${'absolute inset-0 flex items-center justify-center px-4 text-center text-sm text-mute ' + (edit ? 'pb-12' : '')}>${label}</div>`}
+    ${imgs.length > 0 && !edit && html`<button aria-label="Enlarge image" aria-haspopup="dialog" className="absolute inset-0 cursor-zoom-in" onClick=${() => setLb(cur)}></button>`}
+    ${lb !== null && html`<${Lightbox} imgs=${imgs} start=${lb} label=${label} onClose=${() => setLb(null)}/>`}
+    ${imgs.length > 1 && html`<button aria-label="Previous image" className=${nav + ' left-2'} onClick=${() => go(-1)}>${chev('M15 5l-7 7 7 7')}</button>
+      <button aria-label="Next image" className=${nav + ' right-2'} onClick=${() => go(1)}>${chev('M9 5l7 7-7 7')}</button>
+      <div className=${'absolute inset-x-0 flex justify-center gap-1.5 ' + (edit ? 'bottom-14' : 'bottom-3')}>
+        ${imgs.map((_, x) => html`<button key=${x} aria-label=${'Show image ' + (x + 1)} onClick=${() => setI(x)} className=${'h-1.5 rounded-full transition-all ' + (x === cur ? 'w-5 bg-oak' : 'w-1.5 bg-sand/50')}></button>`)}
+      </div>`}
+    ${edit && html`<div className="absolute bottom-3 inset-x-0 flex flex-wrap justify-center gap-2 px-2">
+      ${imgs.length < MAX_IMGS
+        ? html`<label className=${btn}>Add image (${imgs.length}/${MAX_IMGS})<input type="file" accept="image/*" multiple className="sr-only" onChange=${add}/></label>`
+        : html`<span className="px-3 py-1.5 rounded-full bg-ink/80 text-mute text-xs">${MAX_IMGS}/${MAX_IMGS} max</span>`}
+      ${imgs.length > 0 && html`<label className=${btn}>Replace<input type="file" accept="image/*" className="sr-only" onChange=${swap}/></label>
+        <button className=${btn} onClick=${del}>Remove</button>`}
+    </div>`}
+  </div>`;
+}
+
+const Heading = ({children, sub}) => html`
+  <div className="mb-10 sm:mb-14">
+    <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight">${children}</h2>
+    <div className="line h-px w-24 sm:w-40 mt-4"></div>
+    ${sub && html`<p className="text-mute mt-4 max-w-xl">${sub}</p>`}
+  </div>`;
+
+const Section = ({id, children}) => {
+  const ref = React.useRef(null);
+  useEffect(() => {
+    const el = ref.current; if (!el || !('IntersectionObserver' in window)) { el && el.classList.add('on'); return; }
+    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { el.classList.add('on'); io.disconnect(); } }, { threshold: 0.12 });
+    io.observe(el); return () => io.disconnect();
+  }, []);
+  return html`<section id=${id} className="px-5 sm:px-8 py-16 sm:py-24"><div ref=${ref} className="rv max-w-6xl mx-auto">${children}</div></section>`;
+};
+
+function Marquee(){
+  const items = STACK.flatMap(g => g[1]); const row = [...items, ...items];
+  return html`<div className="border-y border-white/10 bg-coal py-4 overflow-hidden" aria-hidden="true">
+    <div className="marq flex font-display font-bold text-xl sm:text-2xl text-sand/80">
+      ${row.map((t, i) => html`<span key=${i} className="flex items-center gap-10 pr-10 whitespace-nowrap">${t}<span className="h-2 w-2 rounded-full bg-oak"></span></span>`)}
+    </div>
+  </div>`;
+}
+
+function Nav(){
+  const [open, setOpen] = useState(false);
+  const [solid, setSolid] = useState(false);
+  useEffect(() => { const f = () => setSolid(window.scrollY > 20); f(); window.addEventListener('scroll', f); return () => window.removeEventListener('scroll', f); }, []);
+  return html`
+  <header className=${'top transition-colors ' + (solid || open ? 'bg-ink/90 backdrop-blur border-b border-white/5' : '')}>
+    <div className="max-w-6xl mx-auto h-16 px-5 sm:px-8 flex items-center justify-between">
+      <a href="#top" className="font-display font-extrabold text-lg tracking-tight">Amiel<span className="text-oak">.</span></a>
+      <nav className="hidden md:flex gap-8 text-sm text-mute">
+        ${NAV.map(n => html`<a key=${n} href=${'#' + n.toLowerCase()} className="hover:text-sand transition-colors">${n}</a>`)}
+      </nav>
+      <button className="md:hidden p-2 -mr-2" aria-label="Toggle menu" aria-expanded=${open} onClick=${() => setOpen(!open)}>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+          ${open ? html`<path d="M5 5l14 14M19 5L5 19"/>` : html`<path d="M4 8h16M4 16h16"/>`}
+        </svg>
+      </button>
+    </div>
+    ${open && html`<nav className="md:hidden px-5 pb-5 flex flex-col max-h-[calc(100svh-4rem)] overflow-y-auto">
+      ${NAV.map(n => html`<a key=${n} href=${'#' + n.toLowerCase()} onClick=${() => setOpen(false)} className="py-3 text-lg font-display border-t border-white/5">${n}</a>`)}
+    </nav>`}
+  </header>`;
+}
+
+function Hero(){
+  return html`
+  <section id="top" className="px-5 sm:px-8 pt-28 sm:pt-32 pb-16 sm:pb-24 min-h-[92svh] flex items-center">
+    <div className="max-w-6xl mx-auto w-full grid lg:grid-cols-[1.3fr_1fr] gap-12 lg:gap-16 items-center">
+      <div className="text-center lg:text-left">
+        <p className="hero-in text-oak font-medium mb-5">Information Technology graduate · Full-stack developer</p>
+        <h1 className="hero-in font-display font-extrabold tracking-tight leading-[0.95] text-4xl min-[400px]:text-5xl sm:text-7xl xl:text-[5.5rem]">
+          <span className="grad-text">Amiel M.<br/>Mirafuentes</span>
+        </h1>
+        <div className="hero-in">
+          <p className="mt-7 text-mute text-base sm:text-lg max-w-xl mx-auto lg:mx-0 leading-relaxed">
+            Building web systems that keep information organized, from the database to the screen. Currently open to entry-level roles.
+          </p>
+          <div className="mt-9 flex flex-wrap justify-center lg:justify-start gap-3">
+            <a href="#projects" className="px-6 py-3 rounded-full bg-gradient-to-r from-[#f0b46e] to-oak text-ink font-semibold hover:-translate-y-0.5 hover:shadow-[0_12px_30px_-8px_rgba(240,180,110,.6)] transition-all">View projects</a>
+            <a href="#contact" className="px-6 py-3 rounded-full border border-white/20 hover:border-oak hover:text-oak transition-colors">Get in touch</a>
+          </div>
+        </div>
+      </div>
+      <div className="hero-in relative mx-auto lg:mr-0 lg:ml-auto w-full max-w-[13.5rem] sm:max-w-[16rem] lg:max-w-[19rem] xl:max-w-[22rem]">
+        <${ImageSlot} k="photo" label="Your photo" className="wood sheen floaty rounded-t-[999px] rounded-b-2xl aspect-[3/4] shadow-[0_30px_80px_-20px_rgba(217,153,90,.45)]">
+          <span className="font-display font-extrabold text-7xl sm:text-8xl text-ink/90 tracking-tighter">AM</span>
+        <//>
+        <div className="absolute -inset-3 rounded-t-[999px] rounded-b-3xl border border-oak/40 -z-10"></div>
+        <div className="glow absolute -inset-6 sm:-inset-12 -z-20 rounded-full bg-[radial-gradient(circle,rgba(232,140,60,.32),transparent_65%)]"></div>
+      </div>
+    </div>
+  </section>`;
+}
+
+function About(){
+  return html`<${Section} id="about">
+    <${Heading}>About<//>
+    <div className="grid md:grid-cols-[1.4fr_1fr] gap-10 md:gap-16">
+      <p className="text-lg sm:text-xl leading-relaxed text-sand/90">
+        I’m a motivated and detail-oriented fresh graduate of Information Technology seeking an entry-level position where I can apply my technical knowledge, develop my skills, gain practical experience, and contribute to the success of the organization.
+      </p>
+      <dl className="space-y-5 text-sm">
+        ${[['Degree','BS Information Technology'],['School','STI College Legazpi'],['Location','Daraga, Albay, Philippines'],['Strengths','Problem-Solving, Analytical Thinking, Attention to Detail, Logical Thinking']].map(([k,v]) => html`
+          <div key=${k} className="border-l border-oak/40 pl-4"><dt className="text-mute">${k}</dt><dd className="mt-0.5 text-sand">${v}</dd></div>`)}
+      </dl>
+    </div>
+  <//>`;
+}
+
+function Experience(){
+  const pts = ['Maintained the office’s developed monitoring system by checking its features and fixing reported issues to keep a centralized system working properly.',
+    'Assisted in updating and managing system data to support accurate and organized information.',
+    'Performed various technical tasks, including basic troubleshooting and computer-related support, to help with daily office operations.'];
+  return html`<${Section} id="experience">
+    <${Heading}>Internship experience<//>
+    <div className="lift rounded-2xl bg-coal border border-white/5 p-6 sm:p-10 grid md:grid-cols-[1fr_2fr] gap-6 md:gap-12">
+      <div>
+        <h3 className="font-display text-2xl font-bold">OJT Trainee</h3>
+        <p className="text-oak mt-1">Department of Education – Regional Office V</p>
+        <p className="text-mute text-sm mt-2">Feb. – May 2027</p>
+      </div>
+      <ul className="space-y-4 text-sand/90 leading-relaxed">
+        ${pts.map(p => html`<li key=${p} className="flex gap-3"><span className="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-oak"></span><span>${p}</span></li>`)}
+      </ul>
+    </div>
+  <//>`;
+}
+
+function Projects(){
+  const ref = React.useRef(null);
+  const go = d => ref.current && ref.current.scrollBy({ left: d * ref.current.clientWidth * 0.8, behavior: 'smooth' });
+  const arrow = 'h-10 w-10 rounded-full border border-white/20 hover:border-oak hover:text-oak transition-colors flex items-center justify-center';
+  const chev = d => html`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d=${d}/></svg>`;
+  return html`<${Section} id="projects">
+    <div className="flex items-end justify-between gap-4">
+      <${Heading}>Projects<//>
+      <div className="hidden sm:flex gap-2 mb-14">
+        <button className=${arrow} aria-label="Previous projects" onClick=${() => go(-1)}>${chev('M15 5l-7 7 7 7')}</button>
+        <button className=${arrow} aria-label="Next projects" onClick=${() => go(1)}>${chev('M9 5l7 7-7 7')}</button>
+      </div>
+    </div>
+    <div ref=${ref} className="proj-scroll flex gap-5 overflow-x-auto snap-x snap-mandatory pt-3 pb-8 -mx-5 px-5 sm:-mx-8 sm:px-8">
+      ${PROJECTS.map((p, i) => html`
+        <article key=${p.name} className="snap-start shrink-0 w-[85%] sm:w-[20rem] lg:w-[22rem] lift flex flex-col rounded-2xl bg-coal border border-white/5 overflow-hidden">
+          <div className="wood h-1.5"></div>
+          <${ProjectImages} k=${'project' + i} label="Project screenshot" className="aspect-video bg-ink border-b border-white/5"/>
+          <div className="p-6 flex flex-col flex-1">
+            <div className="flex flex-wrap gap-x-3 gap-y-1 text-sm text-mute">
+              <span className="text-oak font-medium">${p.kind}</span>${p.role && html`<span>${p.role}</span>`}${p.date && html`<span>${p.date}</span>`}
+            </div>
+            <h3 className="font-display text-xl font-bold mt-3 leading-snug">${p.name}</h3>
+            <p className="mt-4 text-sm leading-relaxed text-sand/85">${p.about}</p>
+            <div className="mt-auto pt-6 flex justify-end">
+              ${p.link
+                ? html`<a href=${p.link} target="_blank" rel="noopener noreferrer" className="group inline-flex items-center gap-1.5 text-sm font-semibold text-oak hover:text-sand transition-colors">Visit website <span className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5">${chev('M7 17L17 7M9 7h8v8')}</span></a>`
+                : html`<span aria-disabled="true" className="inline-flex items-center gap-1.5 text-sm text-mute cursor-not-allowed">Link coming soon ${chev('M7 17L17 7M9 7h8v8')}</span>`}
+            </div>
+          </div>
+        </article>`)}
+    </div>
+  <//>`;
+}
+
+function Skills(){
+  return html`<${Section} id="skills">
+    <${Heading} sub="The languages, frameworks, and tools I work with.">Tech stack<//>
+    <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+      ${STACK.map(([g, items]) => html`
+        <div key=${g}>
+          <h3 className="font-display font-bold text-lg text-oak mb-4">${g}</h3>
+          <div className="flex flex-wrap gap-2">
+            ${items.map(i => html`<span key=${i} className="px-3.5 py-1.5 rounded-full border border-white/15 text-sm hover:border-oak hover:bg-walnut/50 hover:-translate-y-0.5 transition-all">${i}</span>`)}
+          </div>
+        </div>`)}
+    </div>
+    <div className="mt-14">
+      <h3 className="font-display font-bold text-lg text-oak mb-4">Soft skills</h3>
+      <div className="flex flex-wrap gap-2">
+        ${['Problem-Solving','Analytical Thinking','Attention to Detail','Logical Thinking'].map(i => html`<span key=${i} className="px-3.5 py-1.5 rounded-full bg-walnut/40 text-sand text-sm">${i}</span>`)}
+      </div>
+    </div>
+  <//>`;
+}
+
+const CERT_PDF = ''; // Optional: a PDF data URI to ship the certificate permanently
+const CERT_URL = ''; // Optional: a link to the certificate; used instead of the PDF when set
+const pdfBytes = d => { const b = atob(d.split(',')[1]); const a = new Uint8Array(b.length); for (let i = 0; i < b.length; i++) a[i] = b.charCodeAt(i); return a; };
+
+function PdfViewer({k}){
+  const edit = React.useContext(EditCtx);
+  const [src, setSrc] = useState(() => { try { return localStorage.getItem('pdf:' + k) || CERT_PDF; } catch(e){ return CERT_PDF; } });
+  const pick = e => {
+    const f = e.target.files && e.target.files[0]; if (!f) return;
+    const r = new FileReader();
+    r.onload = () => { setSrc(r.result); try { localStorage.setItem('pdf:' + k, r.result); } catch(x){} };
+    r.readAsDataURL(f); e.target.value = '';
+  };
+  const clear = () => { setSrc(CERT_PDF); try { localStorage.removeItem('pdf:' + k); } catch(e){} };
+  const openPdf = () => { const u = URL.createObjectURL(new Blob([pdfBytes(src)], { type: 'application/pdf' })); window.open(u, '_blank'); };
+  const btn = 'px-3.5 py-1.5 rounded-full border border-white/20 text-xs font-medium hover:border-oak hover:text-oak transition-colors cursor-pointer';
+  const arrow = html`<span className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M7 17L17 7M9 7h8v8"/></svg></span>`;
+  const label = 'group inline-flex items-center gap-1.5 text-sm font-semibold text-oak hover:text-sand transition-colors';
+  return html`<div className="mt-auto pt-8 flex flex-col items-end gap-3">
+    ${CERT_URL
+      ? html`<a href=${CERT_URL} target="_blank" rel="noopener noreferrer" className=${label}>View certificate ${arrow}</a>`
+      : src
+        ? html`<button onClick=${openPdf} className=${label}>View certificate ${arrow}</button>`
+        : html`<span aria-disabled="true" className="inline-flex items-center gap-1.5 text-sm text-mute cursor-not-allowed">Certificate coming soon</span>`}
+    ${edit && html`<div className="flex flex-wrap justify-end gap-2">
+      <label className=${btn}>${src ? 'Replace PDF' : 'Upload PDF'}<input type="file" accept="application/pdf" className="sr-only" onChange=${pick}/></label>
+      ${src && html`<button className=${btn} onClick=${clear}>Remove</button>`}
+    </div>`}
+  </div>`;
+}
+
+function Education(){
+  return html`<${Section} id="education">
+    <${Heading}>Education & certification<//>
+    <div className="grid lg:grid-cols-2 gap-6">
+      <div className="lift rounded-2xl bg-coal border border-white/5 p-6 sm:p-8">
+        <p className="text-mute text-sm">Aug. 2023 – Jul. 2027</p>
+        <h3 className="font-display text-xl sm:text-2xl font-bold mt-2">Bachelor of Science in Information Technology</h3>
+        <p className="text-oak mt-1">STI College Legazpi</p>
+        <p className="text-mute text-sm mt-1">Legazpi City, Albay, Philippines</p>
+      </div>
+      <div className="lift flex flex-col rounded-2xl bg-coal border border-white/5 p-6 sm:p-8">
+        <p className="text-mute text-sm">Aug. 2023 – Sep. 2024</p>
+        <h3 className="font-display text-xl sm:text-2xl font-bold mt-2">Java Fundamentals</h3>
+        <p className="text-oak mt-1">Course certification</p>
+        <${PdfViewer} k="cert"/>
+      </div>
+    </div>
+  <//>`;
+}
+
+function Contact(){
+  const links = [
+    ['Email','amielmmirafuentes@gmail.com','mailto:amielmmirafuentes@gmail.com'],
+    ['Phone','+63 936 879 3909','tel:+639368793909'],
+    ['GitHub','github.com/mielophile24','https://github.com/mielophile24'],
+    ['LinkedIn','linkedin.com/in/amiel-mirafuentes-a6794b317','https://linkedin.com/in/amiel-mirafuentes-a6794b317']
+  ];
+  return html`<${Section} id="contact">
+    <div className="wood sheen rounded-3xl p-8 sm:p-14 text-ink">
+      <h2 className="font-display font-extrabold tracking-tight text-3xl sm:text-5xl md:text-6xl leading-tight max-w-2xl">Let’s build something together.</h2>
+      <p className="mt-4 max-w-lg font-medium">Purok 3 Busay, Daraga, Albay, Philippines</p>
+      <div className="mt-10 grid sm:grid-cols-2 gap-3">
+        ${links.map(([k, v, h]) => html`
+          <a key=${k} href=${h} target=${k === 'Email' || k === 'Phone' ? '_self' : '_blank'} rel="noopener noreferrer"
+             className="rounded-xl bg-ink text-sand px-5 py-4 hover:bg-coal transition-colors min-w-0">
+            <span className="block text-xs text-mute">${k}</span>
+            <span className="block mt-0.5 font-medium [overflow-wrap:anywhere]">${v}</span>
+          </a>`)}
+      </div>
+    </div>
+    <p className="text-center text-mute text-sm mt-12">© 2026 Amiel M. Mirafuentes</p>
+  <//>`;
+}
+
+function App(){
+  const [edit, setEdit] = useState(false);
+  return html`<${EditCtx.Provider} value=${edit}>
+    <${Nav}/><main><${Hero}/><${Marquee}/><${About}/><${Experience}/><${Projects}/><${Skills}/><${Education}/><${Contact}/></main>
+    <button onClick=${() => setEdit(!edit)} className=${'fixed z-30 right-4 px-4 py-2.5 rounded-full text-sm font-semibold shadow-lg transition-colors ' + (edit ? 'bg-oak text-ink' : 'bg-coal border border-white/15 text-sand hover:border-oak')} style=${{bottom:'calc(1rem + env(safe-area-inset-bottom, 0px))'}}>${edit ? 'Done editing' : 'Edit images'}</button>
+  <//>`;
+}
+ReactDOM.createRoot(document.getElementById('root')).render(html`<${App}/>`);
