@@ -25,6 +25,18 @@ export default function ProjectCard({ project, index }) {
         </div>
         <h3 className="font-display text-xl font-bold mt-3 leading-snug">{project.name}</h3>
         <p className="mt-4 text-sm leading-relaxed text-sand/85">{project.about}</p>
+        {project.tech && project.tech.length > 0 && (
+          <div className="mt-4 flex flex-wrap gap-1.5">
+            {project.tech.map((t) => (
+              <span
+                key={t}
+                className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-white/[0.04] text-sand/80 border border-white/10"
+              >
+                {t}
+              </span>
+            ))}
+          </div>
+        )}
         <div className="mt-auto pt-6 flex justify-end">
           {project.link ? (
             <a

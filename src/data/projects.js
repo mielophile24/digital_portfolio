@@ -18,7 +18,8 @@ export const PROJECTS = [
     date: 'Sep. 2025 – Dec. 2026',
     link: '',
     images: [deped1, deped2, deped3],
-    about: 'A centralized web app built to replace paper inventory across 3,852 public schools. Features dashboards to track buildings, classrooms, furniture, and IT equipment in real time, making school reporting faster and more accurate.'
+    about: 'A centralized web app built to replace paper inventory across 3,852 public schools. Features dashboards to track buildings, classrooms, furniture, and IT equipment in real time, making school reporting faster and more accurate.',
+    tech: ['ASP.NET', 'React', 'PostgreSQL']
   },
   {
     name: 'STI College Legazpi Library Printing Request Management System',
@@ -28,7 +29,8 @@ export const PROJECTS = [
     link: 'https://dreamy-pastelito-b5dfcb.netlify.app/',
     linkLabel: 'View website',
     images: [printingProjectImg],
-    about: 'A web-based system to organize student printing requests and track fees at the campus library. Created full technical documentation, workflow diagrams, and easy-to-follow user guides for staff and students.'
+    about: 'A web-based system to organize student printing requests and track fees at the campus library. Created full technical documentation, workflow diagrams, and easy-to-follow user guides for staff and students.',
+    tech: ['ASP.NET', 'React', 'Tailwind', 'MongoDB']
   },
   {
     name: 'Four As Gardening Supplies Website',
@@ -37,7 +39,8 @@ export const PROJECTS = [
     date: '',
     link: '',
     images: [fourAs1, fourAs2, fourAs3],
-    about: 'A clean, responsive website and product catalog for a local garden and grass supplier in Albay. Helps customers browse turf varieties and soil products, check delivery options, and request quotes online.'
+    about: 'A clean, responsive website and product catalog for a local garden and grass supplier in Albay. Helps customers browse turf varieties and soil products, check delivery options, and request quotes online.',
+    tech: ['React', 'Tailwind', 'TypeScript']
   },
   {
     name: 'Study Timer Hub',
@@ -46,7 +49,8 @@ export const PROJECTS = [
     date: '',
     link: 'https://study-timer-hub-kappa.vercel.app/',
     images: [studyTimer1, studyTimer2, studyTimer3],
-    about: 'A clean, distraction-free study timer web app for students. Features popular focus methods like Pomodoro, custom intervals, sound alerts, and streak tracking to help build consistent study habits.'
+    about: 'A clean, distraction-free study timer web app for students. Features popular focus methods like Pomodoro, custom intervals, sound alerts, and streak tracking to help build consistent study habits.',
+    tech: ['React', 'Tailwind', 'TypeScript']
   }
 ];
 
