@@ -30,7 +30,7 @@ export const PROJECTS = [
     linkLabel: 'View website',
     images: [printingProjectImg],
     about: 'A web-based system to organize student printing requests and track fees at the campus library. Created full technical documentation, workflow diagrams, and easy-to-follow user guides for staff and students.',
-    tech: ['ASP.NET', 'React', 'Tailwind', 'MongoDB']
+    tech: ['ASP.NET', 'React', 'Tailwind CSS', 'MongoDB']
   },
   {
     name: 'Four As Gardening Supplies Website',
@@ -40,7 +40,7 @@ export const PROJECTS = [
     link: '',
     images: [fourAs1, fourAs2, fourAs3],
     about: 'A clean, responsive website and product catalog for a local garden and grass supplier in Albay. Helps customers browse turf varieties and soil products, check delivery options, and request quotes online.',
-    tech: ['React', 'Tailwind', 'TypeScript']
+    tech: ['React', 'Tailwind CSS', 'TypeScript']
   },
   {
     name: 'Study Timer Hub',
@@ -50,7 +50,7 @@ export const PROJECTS = [
     link: 'https://study-timer-hub-kappa.vercel.app/',
     images: [studyTimer1, studyTimer2, studyTimer3],
     about: 'A clean, distraction-free study timer web app for students. Features popular focus methods like Pomodoro, custom intervals, sound alerts, and streak tracking to help build consistent study habits.',
-    tech: ['React', 'Tailwind', 'TypeScript']
+    tech: ['React', 'Tailwind CSS', 'TypeScript']
   }
 ];
 
