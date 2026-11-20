@@ -18,7 +18,7 @@ export const PROJECTS = [
     date: 'Sep. 2025 – Dec. 2026',
     link: '',
     images: [deped1, deped2, deped3],
-    about: 'Tasked with replacing manual paper-based and spreadsheet inventories across 3,852 public schools and 13 division offices with a centralized monitoring system, I engineered a full-stack, role-aware web platform connecting multi-tier dashboards with database tracking for buildings, rooms, furniture, and ICT equipment. This streamlined data progression to 100% completion, enabling automated division reports and real-time visibility into resource allocations and school ratios.'
+    about: 'A centralized web app built to replace paper inventory across 3,852 public schools. Features dashboards to track buildings, classrooms, furniture, and IT equipment in real time, making school reporting faster and more accurate.'
   },
   {
     name: 'STI College Legazpi Library Printing Request Management System',
@@ -27,7 +27,7 @@ export const PROJECTS = [
     date: 'Dec. 2025',
     link: '',
     images: [printingProjectImg],
-    about: 'Tasked with modernizing the campus library’s manual printing request queue, job tracking, and fee calculation process, I authored complete technical documentation, workflow diagrams, requirement specifications, and step-by-step user manuals for students and staff. This established standardized operating procedures and provided a clear blueprint that eliminated queuing bottlenecks.'
+    about: 'A web-based system to organize student printing requests and track fees at the campus library. Created full technical documentation, workflow diagrams, and easy-to-follow user guides for staff and students.'
   },
   {
     name: '4As Gardening Supplies Website',
@@ -36,7 +36,7 @@ export const PROJECTS = [
     date: '',
     link: '',
     images: [fourAs1, fourAs2, fourAs3],
-    about: 'Tasked with establishing an online presence and product catalog for a local natural turf grass, soil, and landscaping supplier in Daraga, Albay, I designed and developed a responsive web interface highlighting turf varieties, volcanic soil products, service logistics, and inquiry forms. This broadened customer outreach across the Bicol region, driving direct quote inquiries and orders for residential and contractor projects.'
+    about: 'A clean, responsive website and product catalog for a local garden and grass supplier in Albay. Helps customers browse turf varieties and soil products, check delivery options, and request quotes online.'
   },
   {
     name: 'Study Timer Hub',
@@ -45,7 +45,7 @@ export const PROJECTS = [
     date: '',
     link: 'https://study-timer-hub-kappa.vercel.app/',
     images: [studyTimer1, studyTimer2, studyTimer3],
-    about: 'Tasked with creating a distraction-free productivity web application to help students sustain deep focus and build disciplined study habits, I developed a feature-rich web app supporting multiple focus modes (Pomodoro, 50/10, Deep Work, Active Recall) with custom timers, audio cues, and streak analytics. Deployed live on Vercel, it features daily activity heatmaps and subject focus metrics to actively support self-directed learners.'
+    about: 'A clean, distraction-free study timer web app for students. Features popular focus methods like Pomodoro, custom intervals, sound alerts, and streak tracking to help build consistent study habits.'
   }
 ];
 
