@@ -222,8 +222,8 @@ export default function GithubContributions() {
         {!loading && !error && (
           <>
             {/* Scrollable on small screens, expands to 100% full card width on tablet/desktop */}
-            <div className="overflow-x-auto pb-2 scrollbar-thin">
-              <div className="min-w-[720px] w-full select-none">
+            <div className="overflow-x-auto pb-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+              <div className="min-w-[720px] w-full select-none px-2.5 py-2">
                 <div className="flex w-full items-start gap-2">
                   {/* Day-of-week labels */}
                   <div className="w-6 shrink-0 pt-6 flex flex-col justify-between text-[10px] text-mute font-mono select-none h-[105px] sm:h-[118px] md:h-[132px] py-1">
@@ -249,35 +249,45 @@ export default function GithubContributions() {
 
                     {/* Columns of weeks expanding across full width */}
                     <div className="flex w-full justify-between gap-[2.5px] sm:gap-[3.5px] md:gap-[4.5px]">
-                      {weeks.map((week, wIdx) => (
-                        <div
-                          key={wIdx}
-                          className="flex-1 flex flex-col gap-[2.5px] sm:gap-[3.5px] md:gap-[4.5px] min-w-[8px]"
-                        >
-                          {week.map((day, dIdx) => {
-                            if (!day) {
+                      {weeks.map((week, wIdx) => {
+                        const isFirstCol = wIdx === 0;
+                        const isLastCol = wIdx === weeks.length - 1;
+                        const originClass = isLastCol
+                          ? 'origin-right'
+                          : isFirstCol
+                          ? 'origin-left'
+                          : 'origin-center';
+
+                        return (
+                          <div
+                            key={wIdx}
+                            className="flex-1 flex flex-col gap-[2.5px] sm:gap-[3.5px] md:gap-[4.5px] min-w-[8px]"
+                          >
+                            {week.map((day, dIdx) => {
+                              if (!day) {
+                                return (
+                                  <div
+                                    key={dIdx}
+                                    className="w-full aspect-square opacity-0 pointer-events-none"
+                                  />
+                                );
+                              }
+
+                              const levelClass = LEVEL_COLORS[day.level] || LEVEL_COLORS[0];
+
                               return (
                                 <div
                                   key={dIdx}
-                                  className="w-full aspect-square opacity-0 pointer-events-none"
+                                  onMouseEnter={() => setHoveredDay(day)}
+                                  onMouseLeave={() => setHoveredDay(null)}
+                                  className={`w-full aspect-square rounded-[2px] sm:rounded-[3px] ${levelClass} ${originClass} transition-all duration-150 hover:scale-125 hover:ring-2 hover:ring-sand/70 hover:z-20 cursor-pointer`}
+                                  aria-label={`${day.count} contributions on ${day.date}`}
                                 />
                               );
-                            }
-
-                            const levelClass = LEVEL_COLORS[day.level] || LEVEL_COLORS[0];
-
-                            return (
-                              <div
-                                key={dIdx}
-                                onMouseEnter={() => setHoveredDay(day)}
-                                onMouseLeave={() => setHoveredDay(null)}
-                                className={`w-full aspect-square rounded-[2px] sm:rounded-[3px] ${levelClass} transition-all duration-150 hover:scale-150 hover:z-20 cursor-pointer`}
-                                aria-label={`${day.count} contributions on ${day.date}`}
-                              />
-                            );
-                          })}
-                        </div>
-                      ))}
+                            })}
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 </div>
