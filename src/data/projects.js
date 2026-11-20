@@ -26,7 +26,7 @@ export const PROJECTS = [
     role: 'Documentation',
     date: 'Dec. 2025',
     link: 'https://dreamy-pastelito-b5dfcb.netlify.app/',
-    linkLabel: 'View documentation',
+    linkLabel: 'View website',
     images: [printingProjectImg],
     about: 'A web-based system to organize student printing requests and track fees at the campus library. Created full technical documentation, workflow diagrams, and easy-to-follow user guides for staff and students.'
   },
