@@ -50,18 +50,6 @@ export default function Projects() {
       <div className="flex items-end justify-between gap-4">
         <Heading>Projects</Heading>
         <div className="flex items-center gap-3 mb-14">
-          <div className="flex gap-1.5 mr-2">
-            {Array.from({ length: maxIndex + 1 }).map((_, i) => (
-              <button
-                key={i}
-                aria-label={`Go to slide ${i + 1}`}
-                onClick={() => setIndex(i)}
-                className={`h-2 rounded-full transition-all ${
-                  i === safeIndex ? 'w-6 bg-oak' : 'w-2 bg-sand/30 hover:bg-sand/60'
-                }`}
-              />
-            ))}
-          </div>
           <button
             className={`${arrow} ${safeIndex === 0 ? 'opacity-30 cursor-not-allowed hover:border-white/20 hover:text-sand' : ''}`}
             disabled={safeIndex === 0}
@@ -82,7 +70,7 @@ export default function Projects() {
       </div>
 
       <div
-        className="overflow-hidden pt-3 pb-8"
+        className="overflow-hidden pt-3 pb-4"
         onTouchStart={(e) => {
           touchStart.current = e.touches[0].clientX;
         }}
@@ -104,6 +92,22 @@ export default function Projects() {
           ))}
         </div>
       </div>
+
+      {/* Slide indicator dots moved below the project cards */}
+      {maxIndex > 0 && (
+        <div className="mt-4 flex items-center justify-center gap-2">
+          {Array.from({ length: maxIndex + 1 }).map((_, i) => (
+            <button
+              key={i}
+              aria-label={`Go to slide ${i + 1}`}
+              onClick={() => setIndex(i)}
+              className={`h-2 rounded-full transition-all duration-300 ${
+                i === safeIndex ? 'w-7 bg-oak shadow-sm shadow-oak/25' : 'w-2 bg-sand/30 hover:bg-sand/60'
+              }`}
+            />
+          ))}
+        </div>
+      )}
     </Section>
   );
 }
