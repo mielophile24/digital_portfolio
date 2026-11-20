@@ -4,7 +4,7 @@ export const TECH_STACK = [
   ['Languages', ['Java', 'Python', 'C#', 'JavaScript']],
   ['Front-end', ['HTML5', 'CSS3', 'React']],
   ['Database', ['PostgreSQL', 'MySQL', 'SSMS']],
-  ['Tools', ['GitHub', 'Figma', 'Canva']],
+  ['Tools', ['Git', 'GitHub', 'Figma', 'Canva']],
   ['IDEs', ['VS Code', 'Visual Studio', 'Antigravity', 'Codex']],
   ['AI', ['Codex', 'Claude', 'Gemini']]
 ];
