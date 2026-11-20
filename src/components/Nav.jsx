@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { NAV_LINKS } from '../data/portfolioData';
 
-export default function Nav() {
+export default function Nav({ onOpenResume }) {
   const [open, setOpen] = useState(false);
   const [solid, setSolid] = useState(false);
 
@@ -18,13 +18,23 @@ export default function Nav() {
         <a href="#top" className="font-display font-extrabold text-lg tracking-tight">
           Amiel<span className="text-oak">.</span>
         </a>
-        <nav className="hidden md:flex gap-8 text-sm text-mute">
-          {NAV_LINKS.map((n) => (
-            <a key={n} href={'#' + n.toLowerCase()} className="hover:text-sand transition-colors">
-              {n}
-            </a>
-          ))}
-        </nav>
+        <div className="hidden md:flex items-center gap-6">
+          <nav className="flex gap-6 text-sm text-mute">
+            {NAV_LINKS.map((n) => (
+              <a key={n} href={'#' + n.toLowerCase()} className="hover:text-sand transition-colors">
+                {n}
+              </a>
+            ))}
+          </nav>
+          {onOpenResume && (
+            <button
+              onClick={onOpenResume}
+              className="px-3.5 py-1.5 rounded-full border border-oak/60 text-xs font-semibold text-oak hover:bg-oak hover:text-ink transition-colors cursor-pointer"
+            >
+              Resume
+            </button>
+          )}
+        </div>
         <button className="md:hidden p-2 -mr-2" aria-label="Toggle menu" aria-expanded={open} onClick={() => setOpen(!open)}>
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
             {open ? <path d="M5 5l14 14M19 5L5 19" /> : <path d="M4 8h16M4 16h16" />}
@@ -38,6 +48,20 @@ export default function Nav() {
               {n}
             </a>
           ))}
+          {onOpenResume && (
+            <button
+              onClick={() => {
+                setOpen(false);
+                onOpenResume();
+              }}
+              className="py-3 text-lg font-display text-oak border-t border-white/5 text-left cursor-pointer flex items-center justify-between"
+            >
+              <span>View Resume</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M7 17L17 7M9 7h8v8" />
+              </svg>
+            </button>
+          )}
         </nav>
       )}
     </header>

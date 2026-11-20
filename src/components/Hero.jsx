@@ -2,12 +2,12 @@ import React from 'react';
 import ImageSlot from './common/ImageSlot';
 import profileImg from '../assets/profile.jpg';
 
-export default function Hero() {
+export default function Hero({ onOpenResume }) {
   return (
     <section id="top" className="px-5 sm:px-8 pt-28 sm:pt-32 pb-16 sm:pb-24 min-h-[92svh] flex items-center">
       <div className="max-w-6xl mx-auto w-full grid lg:grid-cols-[1.3fr_1fr] gap-12 lg:gap-16 items-center">
         <div className="text-center lg:text-left">
-          <p className="hero-in text-oak font-medium mb-5">Information Technology student · Full-stack developer</p>
+          <p className="hero-in text-oak font-medium mb-5">Information Technology graduate · Full-stack developer</p>
           <h1 className="hero-in font-display font-extrabold tracking-tight leading-[0.95] text-4xl min-[400px]:text-5xl sm:text-7xl xl:text-[5.5rem]">
             <span className="grad-text">Amiel M.<br />Mirafuentes</span>
           </h1>
@@ -19,6 +19,22 @@ export default function Hero() {
               <a href="#projects" className="px-6 py-3 rounded-full bg-gradient-to-r from-[#f0b46e] to-oak text-ink font-semibold hover:-translate-y-0.5 hover:shadow-[0_12px_30px_-8px_rgba(240,180,110,.6)] transition-all">
                 View projects
               </a>
+              {onOpenResume && (
+                <button
+                  type="button"
+                  onClick={onOpenResume}
+                  className="px-6 py-3 rounded-full border border-oak/60 text-oak hover:bg-oak hover:text-ink transition-all font-semibold flex items-center gap-2 cursor-pointer"
+                >
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                    <polyline points="14 2 14 8 20 8" />
+                    <line x1="16" y1="13" x2="8" y2="13" />
+                    <line x1="16" y1="17" x2="8" y2="17" />
+                    <polyline points="10 9 9 9 8 9" />
+                  </svg>
+                  <span>Resume</span>
+                </button>
+              )}
               <a href="#contact" className="px-6 py-3 rounded-full border border-white/20 hover:border-oak hover:text-oak transition-colors">
                 Get in touch
               </a>

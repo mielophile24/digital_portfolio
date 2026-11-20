@@ -1,10 +1,10 @@
-export const NAV_LINKS = ['About', 'Projects', 'Contributions', 'Skills', 'Education', 'Contact'];
+export const NAV_LINKS = ['About', 'Experience', 'Projects', 'Contributions', 'Skills', 'Education', 'Contact'];
 
 export const TECH_STACK = [
   ['Languages', ['Java', 'Python', 'C#', 'JavaScript']],
-  ['Front-end', ['HTML5', 'CSS3', 'React']],
-  ['Database', ['PostgreSQL', 'MySQL', 'SSMS']],
-  ['Tools', ['GitHub', 'Figma', 'Canva']],
+  ['Front-end', ['HTML5', 'CSS3', 'React', 'Web Development']],
+  ['Database', ['PostgreSQL', 'MySQL', 'SSMS', 'SQL', 'Database Management']],
+  ['Tools', ['Git/GitHub', 'Computer Troubleshooting', 'Debugging', 'Figma', 'Canva']],
   ['IDEs', ['VS Code', 'Visual Studio', 'Antigravity', 'Codex']],
   ['AI', ['Codex', 'Claude', 'Gemini']]
 ];
